@@ -17,4 +17,9 @@ export const setAuthToken = (token) => {
   }
 };
 
+const token = localStorage.getItem("token");
+if (token) {
+  setAuthToken(token);
+}
+
 export default api;
