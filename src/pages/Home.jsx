@@ -50,6 +50,18 @@ const App = () => {
             backgroundRepeat: "no-repeat",
           }}
         />
+        <Box
+          component="img"
+          src="/img/logoWeb.png"
+          alt="TASKS Logo"
+          sx={{
+            position: "absolute",
+            top: "20px",
+            left: "20px",
+            width: "180px",
+            height: "auto",
+          }}
+        />
 
         <Box
           sx={{
@@ -131,12 +143,11 @@ const App = () => {
               gutterBottom
               sx={{ fontWeight: "bold", color: "rgb(0, 0, 0)", marginTop: -40 }}
             >
-              Bienvenido al Gestor de Tareas
+              Bienvenido a tu Gestor de Tareas
             </Typography>
             <Box sx={{ mt: 3 }}>
               <Button
                 variant="contained"
-                color="primary"
                 component={Link}
                 to="/login"
                 sx={{
@@ -145,13 +156,18 @@ const App = () => {
                   borderRadius: "25px",
                   padding: "10px 20px",
                   marginBottom: -100,
+                  color: "white",
+                  "&:hover": {
+                    background: "linear-gradient(to right, #B76E50, #7A3E32)",
+                    color: "white", 
+                  },
                 }}
               >
                 Iniciar Sesión
               </Button>
+
               <Button
                 variant="contained"
-                color="primary"
                 component={Link}
                 to="/register"
                 sx={{
@@ -160,6 +176,11 @@ const App = () => {
                   borderRadius: "25px",
                   padding: "10px 20px",
                   marginBottom: -100,
+                  color: "white",
+                  "&:hover": {
+                    background: "linear-gradient(to right, #B76E50, #7A3E32)",
+                    color: "white",
+                  },
                 }}
               >
                 Registrarse

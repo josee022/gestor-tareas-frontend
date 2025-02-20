@@ -1,13 +1,7 @@
 import { useState } from "react";
 import api, { setAuthToken } from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Paper,
-} from "@mui/material";
+import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -38,8 +32,21 @@ const Login = () => {
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
+        position: "relative",
       }}
     >
+      <Box
+        component="img"
+        src="/img/logoWeb.png"
+        alt="TASKS Logo"
+        sx={{
+          position: "absolute",
+          top: "20px",
+          left: "20px",
+          width: "180px", 
+          height: "auto",
+        }}
+      />
       <Paper
         elevation={5}
         sx={{
@@ -47,7 +54,7 @@ const Login = () => {
           borderRadius: "15px",
           width: "100%",
           maxWidth: "400px",
-          background: "linear-gradient(to bottom, #FFEBCC, #FFD699)", // Fondo degradado suave
+          background: "linear-gradient(to bottom, #FFEBCC, #FFD699)",
         }}
       >
         <Typography variant="h4" sx={{ fontWeight: "bold", color: "#4A4A4A" }}>
