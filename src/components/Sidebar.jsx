@@ -41,32 +41,32 @@ const Sidebar = () => {
       anchor="left"
       variant="permanent"
       sx={{
-        width: 250,
+        width: 220,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          width: 250,
-          background: "linear-gradient(to bottom, #FFEBCC, #FFD699)", // Fondo degradado pastel
+          width: 220,
+          height: "100vh",
+          overflow: "hidden",
+          background: "linear-gradient(to bottom, #FFEBCC, #FFD699)",
           color: "#4A4A4A",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between", // Para distribuir mejor los elementos
+          justifyContent: "space-between",
           padding: "10px",
         },
       }}
     >
-      {/* Logo y título */}
-      <Box sx={{ textAlign: "center", py: 2 }}>
+      <Box sx={{ textAlign: "center", py: 1 }}>
         <img
           src="/img/logoWeb.png"
           alt="Logo"
-          style={{ width: "80px", borderRadius: "10px" }}
+          style={{ width: "70px", borderRadius: "10px" }}
         />
         <Typography variant="h6" sx={{ fontWeight: "bold", mt: 1 }}>
           Gestor de Tareas
         </Typography>
       </Box>
 
-      {/* Lista de navegación */}
       <List sx={{ flexGrow: 1 }}>
         {menuItems.map((item, index) => (
           <ListItem key={index} disablePadding>
@@ -80,6 +80,7 @@ const Sidebar = () => {
                 "&:hover": {
                   backgroundColor: "rgba(255, 255, 255, 0.3)",
                 },
+                "& .MuiTypography-root": { color: "#4A4A4A !important" },
               }}
             >
               <ListItemIcon sx={{ color: "#4A4A4A" }}>{item.icon}</ListItemIcon>
@@ -89,8 +90,7 @@ const Sidebar = () => {
         ))}
       </List>
 
-      {/* Footer con algún detalle */}
-      <Box sx={{ textAlign: "center", py: 2, fontSize: "12px", opacity: 0.8 }}>
+      <Box sx={{ textAlign: "center", py: 1, fontSize: "12px", opacity: 0.8 }}>
         <Typography variant="body2">© 2025 Gestor de Tareas</Typography>
       </Box>
     </Drawer>

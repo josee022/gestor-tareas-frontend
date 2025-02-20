@@ -87,7 +87,7 @@ const Tasks = () => {
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         height: "95vh",
-        width: "95vw",
+        width: "calc(100vw - 78px)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
