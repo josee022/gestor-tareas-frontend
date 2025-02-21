@@ -157,8 +157,7 @@ const Tasks = () => {
               Nueva Tarea
             </Button>
           </Box>
-
-          <Grid container spacing={3} justifyContent="center">
+          <Grid container spacing={3} justifyContent="flex-start">
             {tasks.length === 0 ? (
               <Typography variant="body1" sx={{ color: "#666" }}>
                 No hay tareas disponibles
@@ -171,39 +170,106 @@ const Tasks = () => {
                     sx={{
                       padding: "1rem",
                       borderRadius: "10px",
-                      background: "#FFF",
+                      background:
+                        task.status === "completada" ? "#E0F7E9" : "#FFF",
                       boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "space-between",
                       gap: "0.5rem",
+                      position: "relative",
+                      minHeight: "150px",
+                      opacity: task.status === "completada" ? 0.7 : 1,
+                      border:
+                        task.status === "completada"
+                          ? "2px solid #4CAF50"
+                          : "none",
                     }}
                   >
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                      {task.title.charAt(0).toUpperCase() + task.title.slice(1)}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontWeight: "bold", color: "#8D5B4C" }}
-                    >
-                      Prioridad: {task.priority}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontWeight: "bold", color: "#C08457" }}
-                    >
-                      Estado: {task.status}
-                    </Typography>
-
-                    {/* Mostrar Fecha Límite solo si está asignada */}
-                    {task.due_date && (
+                    {task.status === "completada" && (
                       <Typography
-                        variant="body2"
-                        sx={{ fontSize: "14px", color: "#666" }}
+                        sx={{
+                          position: "absolute",
+                          top: 8,
+                          right: 8,
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                          color: "#4CAF50",
+                        }}
                       >
-                        Fecha Límite: {task.due_date}
+                        ✅
                       </Typography>
                     )}
+
+                    {task.due_date && (
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          position: "absolute",
+                          top: 8,
+                          left: 8,
+                          fontSize: "12px",
+                          fontWeight: "bold",
+                          color: "#555",
+                          background: "#FFD699",
+                          padding: "4px 8px",
+                          borderRadius: "5px",
+                          whiteSpace: "nowrap",
+                          "@media (max-width: 400px)": {
+                            fontSize: "10px",
+                            padding: "3px 6px",
+                          },
+                        }}
+                      >
+                        {new Date(task.due_date).toLocaleDateString("es-ES", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
+                      </Typography>
+                    )}
+
+                    <Box sx={{ mt: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          textAlign: "center",
+                          marginTop: task.due_date ? "10px" : "0px",
+                          textDecoration:
+                            task.status === "completada"
+                              ? "line-through"
+                              : "none",
+                          color:
+                            task.status === "completada"
+                              ? "#4CAF50"
+                              : "inherit",
+                        }}
+                      >
+                        {task.title.charAt(0).toUpperCase() +
+                          task.title.slice(1)}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#8D5B4C",
+                          textAlign: "center",
+                        }}
+                      >
+                        Prioridad: {task.priority}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#C08457",
+                          textAlign: "center",
+                        }}
+                      >
+                        Estado: {task.status}
+                      </Typography>
+                    </Box>
 
                     <Box
                       sx={{
