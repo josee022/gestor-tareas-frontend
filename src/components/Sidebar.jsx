@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import {
-  Dashboard,
   ListAlt,
   Folder,
   Label,
@@ -23,7 +22,6 @@ import {
 } from "@mui/icons-material";
 
 const menuItems = [
-  { text: "Dashboard", icon: <Dashboard />, path: "/" },
   { text: "Tareas", icon: <ListAlt />, path: "/tasks" },
   { text: "Carpetas", icon: <Folder />, path: "/folders" },
   { text: "Etiquetas", icon: <Label />, path: "/tags" },

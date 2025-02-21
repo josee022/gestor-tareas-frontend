@@ -3,27 +3,27 @@ import api from "../services/api";
 import {
   Box,
   Button,
-  TextField,
   Typography,
   Paper,
-  List,
-  ListItem,
-  ListItemText,
   IconButton,
-  Modal,
+  Grid,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import AddIcon from "@mui/icons-material/Add";
+import Sidebar from "../components/Sidebar";
+import TaskForm from "../components/TaskForm";
+import TaskEditModal from "../components/TaskEditModal";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import TaskDetailsModal from "../components/TaskDetailsModal";
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState({
-    title: "",
-    description: "",
-    priority: 1,
-  });
   const [editTask, setEditTask] = useState(null);
-  const [open, setOpen] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [showTask, setShowTask] = useState(null);
+  const [openDetails, setOpenDetails] = useState(false);
 
   useEffect(() => {
     fetchTasks();
@@ -32,18 +32,21 @@ const Tasks = () => {
   const fetchTasks = async () => {
     try {
       const response = await api.get("/tasks");
-      setTasks(response.data);
+      setTasks(
+        response.data.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        )
+      );
     } catch (error) {
       console.error("Error al obtener tareas:", error);
     }
   };
 
-  const handleCreateTask = async (e) => {
-    e.preventDefault();
+  const handleCreateTask = async (newTask) => {
     try {
       await api.post("/tasks", newTask);
-      setNewTask({ title: "", description: "", priority: 1 });
       fetchTasks();
+      setOpenCreate(false);
     } catch (error) {
       console.error("Error al crear tarea:", error);
     }
@@ -60,194 +63,198 @@ const Tasks = () => {
 
   const handleOpenEditModal = (task) => {
     setEditTask(task);
-    setOpen(true);
+    setOpenEdit(true);
   };
 
-  const handleCloseModal = () => {
-    setOpen(false);
+  const handleCloseEditModal = () => {
+    setOpenEdit(false);
     setEditTask(null);
   };
 
-  const handleUpdateTask = async (e) => {
-    e.preventDefault();
+  const handleUpdateTask = async (updatedTask) => {
     try {
-      await api.put(`/tasks/${editTask.id}`, editTask);
+      await api.put(`/tasks/${updatedTask.id}`, updatedTask);
       fetchTasks();
-      handleCloseModal();
+      handleCloseEditModal();
     } catch (error) {
       console.error("Error al actualizar tarea:", error);
     }
   };
 
+  const handleOpenDetailsModal = (task) => {
+    setShowTask(task);
+    setOpenDetails(true);
+  };
+
+  const handleCloseDetailsModal = () => {
+    setOpenDetails(false);
+    setShowTask(null);
+  };
+
   return (
     <Box
       sx={{
-        backgroundImage: "url('/img/fondotasks.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        height: "95vh",
-        width: "calc(100vw - 78px)",
         display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-        padding: 4,
+        width: "100vw",
+        height: "100vh",
+        overflow: "hidden",
       }}
     >
-      <Paper
-        elevation={5}
+      <Sidebar />
+
+      <Box
         sx={{
-          padding: "2rem",
-          borderRadius: "15px",
-          width: "100%",
-          maxWidth: "500px",
-          background: "linear-gradient(to bottom, #FFEBCC, #FFD699)",
+          flex: 1,
+          padding: 4,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+          overflowX: "hidden",
+          overflowY: "auto",
+          backgroundImage: "url('/img/fondotasks.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
       >
-        <Typography
-          variant="h4"
-          sx={{ fontWeight: "bold", color: "#4A4A4A", mb: 2 }}
-        >
-          Lista de Tareas
-        </Typography>
-
-        <form
-          onSubmit={handleCreateTask}
-          style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-        >
-          <TextField
-            fullWidth
-            label="Título"
-            variant="outlined"
-            value={newTask.title}
-            onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-            required
-          />
-          <TextField
-            fullWidth
-            label="Descripción"
-            variant="outlined"
-            value={newTask.description}
-            onChange={(e) =>
-              setNewTask({ ...newTask, description: e.target.value })
-            }
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{
-              background: "linear-gradient(to right, #C08457, #8D5B4C)",
-              borderRadius: "25px",
-              padding: "10px",
-            }}
-          >
-            Agregar Tarea
-          </Button>
-        </form>
-
-        <List sx={{ mt: 3 }}>
-          {tasks.length === 0 ? (
-            <Typography variant="body1" sx={{ color: "#666" }}>
-              No hay tareas disponibles
-            </Typography>
-          ) : (
-            tasks.map((task) => (
-              <ListItem
-                key={task.id}
-                sx={{
-                  background: "#FFF",
-                  borderRadius: "10px",
-                  boxShadow: "0px 2px 4px rgba(0,0,0,0.1)",
-                  mb: 1,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <ListItemText
-                  primary={task.title}
-                  secondary={task.description}
-                />
-                <Box>
-                  <IconButton
-                    onClick={() => handleOpenEditModal(task)}
-                    sx={{ color: "#8D5B4C" }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleDeleteTask(task.id)}
-                    sx={{ color: "#C08457" }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
-              </ListItem>
-            ))
-          )}
-        </List>
-      </Paper>
-
-      <Modal open={open} onClose={handleCloseModal}>
-        <Box
+        <Paper
+          elevation={5}
           sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "white",
-            boxShadow: 24,
-            p: 4,
-            borderRadius: "10px",
+            padding: "2rem",
+            borderRadius: "15px",
+            width: "90%",
+            maxWidth: "1200px",
+            background: "linear-gradient(to bottom, #FFEBCC, #FFD699)",
+            position: "relative",
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
-            Editar Tarea
-          </Typography>
-          {editTask && (
-            <form
-              onSubmit={handleUpdateTask}
-              style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 3,
+            }}
+          >
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: "bold", color: "#4A4A4A" }}
             >
-              <TextField
-                fullWidth
-                label="Título"
-                variant="outlined"
-                value={editTask.title}
-                onChange={(e) =>
-                  setEditTask({ ...editTask, title: e.target.value })
-                }
-                required
-              />
-              <TextField
-                fullWidth
-                label="Descripción"
-                variant="outlined"
-                value={editTask.description}
-                onChange={(e) =>
-                  setEditTask({ ...editTask, description: e.target.value })
-                }
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{
-                  background: "linear-gradient(to right, #C08457, #8D5B4C)",
-                  borderRadius: "25px",
-                  padding: "10px",
-                }}
-              >
-                Guardar Cambios
-              </Button>
-            </form>
-          )}
-        </Box>
-      </Modal>
+              Lista de Tareas
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              sx={{
+                background: "linear-gradient(to right, #C08457, #8D5B4C)",
+                borderRadius: "20px",
+                fontSize: "16px",
+                padding: "8px 16px",
+              }}
+              onClick={() => setOpenCreate(true)}
+            >
+              Nueva Tarea
+            </Button>
+          </Box>
+
+          <Grid container spacing={3} justifyContent="center">
+            {tasks.length === 0 ? (
+              <Typography variant="body1" sx={{ color: "#666" }}>
+                No hay tareas disponibles
+              </Typography>
+            ) : (
+              tasks.map((task) => (
+                <Grid item xs={12} sm={6} md={4} key={task.id}>
+                  <Paper
+                    elevation={3}
+                    sx={{
+                      padding: "1rem",
+                      borderRadius: "10px",
+                      background: "#FFF",
+                      boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                      {task.title.charAt(0).toUpperCase() + task.title.slice(1)}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: "bold", color: "#8D5B4C" }}
+                    >
+                      Prioridad: {task.priority}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: "bold", color: "#C08457" }}
+                    >
+                      Estado: {task.status}
+                    </Typography>
+
+                    {/* Mostrar Fecha Límite solo si está asignada */}
+                    {task.due_date && (
+                      <Typography
+                        variant="body2"
+                        sx={{ fontSize: "14px", color: "#666" }}
+                      >
+                        Fecha Límite: {task.due_date}
+                      </Typography>
+                    )}
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: 1,
+                      }}
+                    >
+                      <IconButton
+                        onClick={() => handleOpenDetailsModal(task)}
+                        sx={{ color: "#4A4A4A" }}
+                      >
+                        <VisibilityIcon />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleOpenEditModal(task)}
+                        sx={{ color: "#8D5B4C" }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleDeleteTask(task.id)}
+                        sx={{ color: "#C08457" }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                  </Paper>
+                </Grid>
+              ))
+            )}
+          </Grid>
+        </Paper>
+
+        <TaskForm
+          open={openCreate}
+          onClose={() => setOpenCreate(false)}
+          onCreate={handleCreateTask}
+        />
+        <TaskEditModal
+          open={openEdit}
+          onClose={handleCloseEditModal}
+          task={editTask}
+          onUpdate={handleUpdateTask}
+        />
+        <TaskDetailsModal
+          open={openDetails}
+          onClose={handleCloseDetailsModal}
+          task={showTask}
+        />
+      </Box>
     </Box>
   );
 };
