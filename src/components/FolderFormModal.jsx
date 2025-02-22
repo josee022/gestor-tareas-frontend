@@ -7,30 +7,32 @@ const FolderFormModal = ({ open, onClose, folder, onUpdate }) => {
   const [name, setName] = useState("");
 
   useEffect(() => {
-    if (folder) {
-      setName(folder.name);
-    } else {
-      setName("");
-    }
+    setName(folder ? folder.name : "");
   }, [folder]);
+
+  const handleClose = () => {
+    setName("");
+    onClose();
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (folder) {
         await api.put(`/folders/${folder.id}`, { name });
+        onUpdate({ ...folder, name });
       } else {
-        await api.post("/folders", { name });
+        const response = await api.post("/folders", { name });
+        onUpdate(response.data); 
       }
-      onUpdate();
-      onClose();
+      handleClose();
     } catch (error) {
       console.error("Error al guardar la carpeta:", error);
     }
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={handleClose}>
       <Box sx={modalStyle}>
         <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
           {folder ? "Editar Carpeta" : "Nueva Carpeta"}

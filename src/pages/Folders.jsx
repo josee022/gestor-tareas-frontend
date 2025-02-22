@@ -22,15 +22,28 @@ const Folders = () => {
   const fetchFolders = async () => {
     try {
       const response = await api.get("/folders");
-      setFolders(response.data);
+      const sortedFolders = response.data.sort(
+        (a, b) => new Date(a.created_at) - new Date(b.created_at) 
+      );
+      setFolders(sortedFolders);
     } catch (error) {
       console.error("Error al obtener carpetas:", error);
     }
   };
 
   const handleOpenModal = (folder = null) => {
-    setEditFolder(folder);
+    setEditFolder(folder ? { ...folder } : null);
     setOpenModal(true);
+  };
+
+  const handleUpdateFolder = (updatedFolder) => {
+    setFolders((prevFolders) =>
+      prevFolders.map((folder) =>
+        folder.id === updatedFolder.id
+          ? { ...folder, ...updatedFolder }
+          : folder
+      )
+    );
   };
 
   const handleCloseModal = () => {
@@ -47,6 +60,12 @@ const Folders = () => {
     }
   };
 
+  const handleDeleteFolder = (folderId) => {
+    setFolders((prevFolders) =>
+      prevFolders.filter((folder) => folder.id !== folderId)
+    );
+  };
+
   return (
     <Box sx={{ display: "flex", width: "100vw", height: "100vh" }}>
       <Sidebar />
@@ -58,7 +77,7 @@ const Folders = () => {
           flexDirection: "column",
           alignItems: "center",
           textAlign: "center",
-          backgroundImage: "url('/img/folders-bg.jpg')",
+          backgroundImage: "url('/img/fondo3.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           overflowX: "hidden",
@@ -66,22 +85,36 @@ const Folders = () => {
         }}
       >
         <Paper
-          elevation={5}
+          elevation={0}
           sx={{
             padding: "2rem",
             borderRadius: "15px",
             width: "90%",
             maxWidth: "1200px",
-            background: "linear-gradient(to bottom, #FFEBCC, #FFD699)",
+            background: "transparent",
           }}
         >
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-            <Typography
-              variant="h4"
-              sx={{ fontWeight: "bold", color: "#4A4A4A" }}
+            <Box
+              sx={{
+                display: "inline-block",
+                background: "linear-gradient(to right, #C08457, #FFD699)",
+                padding: { xs: "6px 12px", sm: "8px 16px", md: "10px 20px" },
+                borderRadius: "25px",
+                boxShadow: "0px 4px 8px rgba(0,0,0,0.2)",
+              }}
             >
-              Carpetas
-            </Typography>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#FFF",
+                  fontSize: { xs: "1rem", sm: "1.5rem", md: "2rem" },
+                }}
+              >
+                Lista de Carpetas
+              </Typography>
+            </Box>
             <Button
               variant="contained"
               startIcon={<AddIcon />}
@@ -98,22 +131,57 @@ const Folders = () => {
           </Box>
           <Grid container spacing={3} justifyContent="flex-start">
             {folders.length === 0 ? (
-              <Typography variant="body1" sx={{ color: "#666" }}>
-                No hay carpetas disponibles
-              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "20vh",
+                  textAlign: "center",
+                  marginLeft: "24vw",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "2rem",
+                    borderRadius: "15px",
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: "bold",
+                      color: "#FFF",
+                      fontSize: { xs: "1rem", sm: "1.2rem", md: "1.7rem" },
+                      background: "linear-gradient(to right, #C08457, #FFD699)",
+                      padding: "8px 16px",
+                      borderRadius: "20px",
+                    }}
+                  >
+                    No hay carpetas disponibles
+                  </Typography>
+                </Box>
+              </Box>
             ) : (
               folders.map((folder) => (
-                <FolderCard
-                  key={folder.id}
-                  folder={folder}
-                  onEdit={handleOpenModal}
-                  onClick={() => handleSelectFolder(folder)} // Aquí seleccionamos la carpeta
-                />
+                <Grid item xs={12} sm={6} md={4} key={folder.id}>
+                  <FolderCard
+                    key={folder.id}
+                    folder={folder}
+                    onEdit={handleOpenModal}
+                    onClick={() => handleSelectFolder(folder)}
+                    onDelete={handleDeleteFolder}
+                  />
+                </Grid>
               ))
             )}
           </Grid>
 
-          {/* Si hay una carpeta seleccionada, mostramos sus tareas */}
           {selectedFolder && (
             <>
               <FolderTasks
@@ -137,15 +205,13 @@ const Folders = () => {
         </Paper>
       </Box>
 
-      {/* Modal para agregar carpetas */}
       <FolderFormModal
         open={openModal}
         onClose={handleCloseModal}
         folder={editFolder}
-        onUpdate={fetchFolders}
+        onUpdate={handleUpdateFolder}
       />
 
-      {/* Modal para asignar tareas a carpetas */}
       <AssignTaskToFolderModal
         open={openAssignTask}
         onClose={() => setOpenAssignTask(false)}

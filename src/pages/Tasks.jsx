@@ -119,13 +119,13 @@ const Tasks = () => {
         }}
       >
         <Paper
-          elevation={5}
+          elevation={0}
           sx={{
             padding: "2rem",
             borderRadius: "15px",
             width: "90%",
             maxWidth: "1200px",
-            background: "linear-gradient(to bottom, #FFEBCC, #FFD699)",
+            background: "transparent",
             position: "relative",
           }}
         >
@@ -137,12 +137,27 @@ const Tasks = () => {
               mb: 3,
             }}
           >
-            <Typography
-              variant="h4"
-              sx={{ fontWeight: "bold", color: "#4A4A4A" }}
+            <Box
+              sx={{
+                display: "inline-block",
+                background: "linear-gradient(to right, #C08457, #FFD699)",
+                padding: { xs: "6px 12px", sm: "8px 16px", md: "10px 20px" },
+                borderRadius: "25px",
+                boxShadow: "0px 4px 8px rgba(0,0,0,0.2)",
+              }}
             >
-              Lista de Tareas
-            </Typography>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: "bold",
+                  color: "#FFF",
+                  fontSize: { xs: "1rem", sm: "1.5rem", md: "2rem" },
+                }}
+              >
+                Lista de Tareas
+              </Typography>
+            </Box>
+
             <Button
               variant="contained"
               startIcon={<AddIcon />}
@@ -159,9 +174,42 @@ const Tasks = () => {
           </Box>
           <Grid container spacing={3} justifyContent="flex-start">
             {tasks.length === 0 ? (
-              <Typography variant="body1" sx={{ color: "#666" }}>
-                No hay tareas disponibles
-              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "20vh",
+                  textAlign: "center",
+                  marginLeft: "24vw",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "2rem",
+                    borderRadius: "15px",
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: "bold",
+                      color: "#FFF",
+                      fontSize: { xs: "1rem", sm: "1.2rem", md: "1.7rem" },
+                      background: "linear-gradient(to right, #C08457, #FFD699)",
+                      padding: "8px 16px",
+                      borderRadius: "20px",
+                    }}
+                  >
+                    No hay tareas disponibles
+                  </Typography>
+                </Box>
+              </Box>
             ) : (
               tasks.map((task) => (
                 <Grid item xs={12} sm={6} md={4} key={task.id}>

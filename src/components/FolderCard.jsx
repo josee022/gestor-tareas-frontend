@@ -10,7 +10,7 @@ const FolderCard = ({ folder, onEdit, onDelete }) => {
     if (window.confirm("¿Seguro que deseas eliminar esta carpeta?")) {
       try {
         await api.delete(`/folders/${folder.id}`);
-        onDelete();
+        onDelete(folder.id);
       } catch (error) {
         console.error("Error al eliminar carpeta:", error);
       }
@@ -28,8 +28,8 @@ const FolderCard = ({ folder, onEdit, onDelete }) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        width: "200px",
-        height: "150px",
+        width: "90%",
+        minHeight: "150px",
         justifyContent: "space-between",
         position: "relative",
       }}
