@@ -12,12 +12,7 @@ import {
 } from "@mui/material";
 import api from "../services/api";
 
-const AssignTaskToFolderModal = ({
-  open,
-  onClose,
-  folderId,
-  onTaskAssigned,
-}) => {
+const AssignTaskToFolderModal = ({ open, onClose, folder, onTaskAssigned }) => {
   const [availableTasks, setAvailableTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState("");
 
@@ -38,9 +33,20 @@ const AssignTaskToFolderModal = ({
   };
 
   const handleAssignTask = async () => {
-    if (!selectedTask) return;
+    if (!selectedTask || !selectedTask.id) {
+      console.error("Error: No se ha seleccionado una tarea válida.");
+      return;
+    }
+
+    if (!folder || !folder.id) {
+      console.error("Error: No hay una carpeta seleccionada.");
+      return;
+    }
+
     try {
-      await api.put(`/tasks/${selectedTask}/move`, { folder_id: folderId });
+      await api.put(`/tasks/${selectedTask.id}/move`, {
+        folder_id: folder.id,
+      });
       onTaskAssigned();
       onClose();
     } catch (error) {
@@ -57,8 +63,12 @@ const AssignTaskToFolderModal = ({
         <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel>Tarea</InputLabel>
           <Select
-            value={selectedTask}
-            onChange={(e) => setSelectedTask(e.target.value)}
+            value={selectedTask ? selectedTask.id : ""}
+            onChange={(e) => {
+              const taskId = e.target.value;
+              const task = availableTasks.find((t) => t.id === taskId);
+              setSelectedTask(task || null);
+            }}
           >
             {availableTasks.length === 0 ? (
               <MenuItem disabled>No hay tareas disponibles</MenuItem>
@@ -98,10 +108,14 @@ const modalStyle = {
   borderRadius: "10px",
 };
 
+// 📌 Validación de PropTypes corregida
 AssignTaskToFolderModal.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  folderId: PropTypes.number.isRequired,
+  folder: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string, // Opcional pero recomendado
+  }).isRequired, // ✅ Esto asegura que `folder` sea un objeto válido
   onTaskAssigned: PropTypes.func.isRequired,
 };
 

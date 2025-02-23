@@ -23,7 +23,7 @@ const Folders = () => {
     try {
       const response = await api.get("/folders");
       const sortedFolders = response.data.sort(
-        (a, b) => new Date(a.created_at) - new Date(b.created_at) 
+        (a, b) => new Date(a.created_at) - new Date(b.created_at)
       );
       setFolders(sortedFolders);
     } catch (error) {
@@ -174,8 +174,8 @@ const Folders = () => {
                     key={folder.id}
                     folder={folder}
                     onEdit={handleOpenModal}
-                    onClick={() => handleSelectFolder(folder)}
                     onDelete={handleDeleteFolder}
+                    onSelect={handleSelectFolder} // Asegura que al hacer clic, se muestren las tareas
                   />
                 </Grid>
               ))
@@ -187,8 +187,8 @@ const Folders = () => {
               <FolderTasks
                 folder={selectedFolder}
                 tasks={selectedFolder.tasks}
-                onRemoveTask={fetchFolders}
-                onEditTask={fetchFolders}
+                onRemoveTask={fetchFolders} // Para actualizar al eliminar
+                onEditTask={fetchFolders} // Si en un futuro editamos tareas desde aquí
               />
               <Button
                 variant="contained"
