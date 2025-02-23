@@ -5,15 +5,11 @@ import AddIcon from "@mui/icons-material/Add";
 import Sidebar from "../components/Sidebar";
 import FolderCard from "../components/FolderCard";
 import FolderFormModal from "../components/FolderFormModal";
-import FolderTasks from "../components/FolderTasks";
-import AssignTaskToFolderModal from "../components/AssignTaskToFolderModal";
 
 const Folders = () => {
   const [folders, setFolders] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [editFolder, setEditFolder] = useState(null);
-  const [selectedFolder, setSelectedFolder] = useState(null);
-  const [openAssignTask, setOpenAssignTask] = useState(false);
 
   useEffect(() => {
     fetchFolders();
@@ -49,15 +45,6 @@ const Folders = () => {
   const handleCloseModal = () => {
     setOpenModal(false);
     setEditFolder(null);
-  };
-
-  const handleSelectFolder = async (folder) => {
-    try {
-      const response = await api.get(`/folders/${folder.id}/tasks`);
-      setSelectedFolder({ ...folder, tasks: response.data });
-    } catch (error) {
-      console.error("Error al obtener tareas de la carpeta:", error);
-    }
   };
 
   const handleDeleteFolder = (folderId) => {
@@ -175,33 +162,11 @@ const Folders = () => {
                     folder={folder}
                     onEdit={handleOpenModal}
                     onDelete={handleDeleteFolder}
-                    onSelect={handleSelectFolder} // Asegura que al hacer clic, se muestren las tareas
                   />
                 </Grid>
               ))
             )}
           </Grid>
-
-          {selectedFolder && (
-            <>
-              <FolderTasks
-                folder={selectedFolder}
-                tasks={selectedFolder.tasks}
-                onRemoveTask={fetchFolders} // Para actualizar al eliminar
-                onEditTask={fetchFolders} // Si en un futuro editamos tareas desde aquí
-              />
-              <Button
-                variant="contained"
-                sx={{
-                  mt: 2,
-                  background: "linear-gradient(to right, #C08457, #8D5B4C)",
-                }}
-                onClick={() => setOpenAssignTask(true)}
-              >
-                Agregar Tareas a {selectedFolder.name}
-              </Button>
-            </>
-          )}
         </Paper>
       </Box>
 
@@ -210,13 +175,6 @@ const Folders = () => {
         onClose={handleCloseModal}
         folder={editFolder}
         onUpdate={handleUpdateFolder}
-      />
-
-      <AssignTaskToFolderModal
-        open={openAssignTask}
-        onClose={() => setOpenAssignTask(false)}
-        folder={selectedFolder}
-        onTaskAssigned={fetchFolders}
       />
     </Box>
   );

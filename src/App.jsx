@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Folders from "./pages/Folders";
+import FolderDetails from "./pages/FolderDetails";
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/tasks" element={<Tasks />} />
         <Route path="/folders" element={<Folders />} />
+        <Route path="/folders/:id" element={<FolderDetails />} />
       </Routes>
     </>
   );
