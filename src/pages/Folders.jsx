@@ -8,8 +8,8 @@ import FolderFormModal from "../components/FolderFormModal";
 
 const Folders = () => {
   const [folders, setFolders] = useState([]);
-  const [openModal, setOpenModal] = useState(false);
   const [editFolder, setEditFolder] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     fetchFolders();
@@ -18,39 +18,60 @@ const Folders = () => {
   const fetchFolders = async () => {
     try {
       const response = await api.get("/folders");
-      const sortedFolders = response.data.sort(
-        (a, b) => new Date(a.created_at) - new Date(b.created_at)
+      setFolders(
+        response.data.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        )
       );
-      setFolders(sortedFolders);
     } catch (error) {
       console.error("Error al obtener carpetas:", error);
     }
   };
 
-  const handleOpenModal = (folder = null) => {
-    setEditFolder(folder ? { ...folder } : null);
-    setOpenModal(true);
+  const handleCreateFolder = async (newFolder) => {
+    try {
+      const response = await api.post("/folders", newFolder);
+      setFolders((prevFolders) => [response.data, ...prevFolders]); // Agrega la nueva carpeta al inicio
+      setOpenModal(false);
+    } catch (error) {
+      console.error("Error al crear carpeta:", error);
+    }
   };
 
-  const handleUpdateFolder = (updatedFolder) => {
-    setFolders((prevFolders) =>
-      prevFolders.map((folder) =>
-        folder.id === updatedFolder.id
-          ? { ...folder, ...updatedFolder }
-          : folder
-      )
-    );
+  const handleUpdateFolder = async (updatedFolder) => {
+    try {
+      const response = await api.put(
+        `/folders/${updatedFolder.id}`,
+        updatedFolder
+      );
+      setFolders((prevFolders) =>
+        prevFolders.map((folder) =>
+          folder.id === updatedFolder.id
+            ? { ...folder, ...response.data }
+            : folder
+        )
+      );
+      setOpenModal(false);
+      setEditFolder(null);
+    } catch (error) {
+      console.error("Error al actualizar carpeta:", error);
+    }
   };
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setEditFolder(null);
-  };
+  const handleDeleteFolder = async (folderId) => {
+    if (!window.confirm("¿Seguro que deseas eliminar esta carpeta?")) return;
 
-  const handleDeleteFolder = (folderId) => {
     setFolders((prevFolders) =>
       prevFolders.filter((folder) => folder.id !== folderId)
     );
+
+    try {
+      await api.delete(`/folders/${folderId}`);
+    } catch (error) {
+      console.error("Error al eliminar la carpeta:", error);
+      alert("Hubo un error al eliminar la carpeta.");
+      fetchFolders(); // Vuelve a cargar la lista en caso de error
+    }
   };
 
   return (
@@ -111,57 +132,32 @@ const Folders = () => {
                 fontSize: "16px",
                 padding: "8px 16px",
               }}
-              onClick={() => handleOpenModal()}
+              onClick={() => {
+                setEditFolder(null);
+                setOpenModal(true);
+              }}
             >
               Nueva Carpeta
             </Button>
           </Box>
           <Grid container spacing={3} justifyContent="flex-start">
             {folders.length === 0 ? (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "20vh",
-                  textAlign: "center",
-                  marginLeft: "24vw",
-                }}
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: "bold", color: "#FFF", textAlign: "center" }}
               >
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "2rem",
-                    borderRadius: "15px",
-                  }}
-                >
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: "bold",
-                      color: "#FFF",
-                      fontSize: { xs: "1rem", sm: "1.2rem", md: "1.7rem" },
-                      background: "linear-gradient(to right, #C08457, #FFD699)",
-                      padding: "8px 16px",
-                      borderRadius: "20px",
-                    }}
-                  >
-                    No hay carpetas disponibles
-                  </Typography>
-                </Box>
-              </Box>
+                No hay carpetas disponibles
+              </Typography>
             ) : (
               folders.map((folder) => (
                 <Grid item xs={12} sm={6} md={4} key={folder.id}>
                   <FolderCard
-                    key={folder.id}
                     folder={folder}
-                    onEdit={handleOpenModal}
-                    onDelete={handleDeleteFolder}
+                    onEdit={() => {
+                      setEditFolder(folder);
+                      setOpenModal(true);
+                    }}
+                    onDelete={() => handleDeleteFolder(folder.id)}
                   />
                 </Grid>
               ))
@@ -172,9 +168,13 @@ const Folders = () => {
 
       <FolderFormModal
         open={openModal}
-        onClose={handleCloseModal}
+        onClose={() => {
+          setOpenModal(false);
+          setEditFolder(null);
+        }}
         folder={editFolder}
         onUpdate={handleUpdateFolder}
+        onCreate={handleCreateFolder}
       />
     </Box>
   );
