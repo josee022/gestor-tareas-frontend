@@ -2,19 +2,8 @@ import PropTypes from "prop-types";
 import { Box, Typography, Paper, IconButton, Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import api from "../services/api";
 
 const FolderTasks = ({ folder, tasks, onRemoveTask, onEditTask }) => {
-  const handleRemoveTask = async (taskId) => {
-    if (window.confirm("¿Seguro que deseas quitar esta tarea de la carpeta?")) {
-      try {
-        await api.put(`/tasks/${taskId}/remove-folder`);
-        onRemoveTask(taskId);
-      } catch (error) {
-        console.error("Error al quitar la tarea de la carpeta:", error);
-      }
-    }
-  };
 
   return (
     <Paper
@@ -88,7 +77,7 @@ const FolderTasks = ({ folder, tasks, onRemoveTask, onEditTask }) => {
                     <EditIcon />
                   </IconButton>
                   <IconButton
-                    onClick={() => handleRemoveTask(task.id)}
+                    onClick={() => onRemoveTask(task.id)}
                     sx={{ color: "#C08457" }}
                   >
                     <DeleteIcon />

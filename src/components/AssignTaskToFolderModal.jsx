@@ -47,7 +47,12 @@ const AssignTaskToFolderModal = ({ open, onClose, folder, onTaskAssigned }) => {
       await api.put(`/tasks/${selectedTask.id}/move`, {
         folder_id: folder.id,
       });
-      onTaskAssigned();
+
+      onTaskAssigned({
+        ...selectedTask,
+        folder_id: folder.id, 
+      });
+
       onClose();
     } catch (error) {
       console.error("Error al asignar tarea:", error);
@@ -108,14 +113,13 @@ const modalStyle = {
   borderRadius: "10px",
 };
 
-// 📌 Validación de PropTypes corregida
 AssignTaskToFolderModal.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   folder: PropTypes.shape({
     id: PropTypes.number.isRequired,
-    name: PropTypes.string, // Opcional pero recomendado
-  }).isRequired, // ✅ Esto asegura que `folder` sea un objeto válido
+    name: PropTypes.string,
+  }).isRequired,
   onTaskAssigned: PropTypes.func.isRequired,
 };
 

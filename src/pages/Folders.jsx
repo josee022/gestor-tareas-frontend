@@ -8,6 +8,7 @@ import {
   IconButton,
   Grid,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
@@ -20,6 +21,11 @@ const Folder = () => {
   const [editFolder, setEditFolder] = useState(null);
   const [openCreate, setOpenCreate] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const navigate = useNavigate();
+
+  const handleOpenFolder = (folderId) => {
+    navigate(`/folders/${folderId}`);
+  };
 
   useEffect(() => {
     fetchFolder();
@@ -227,8 +233,10 @@ const Folder = () => {
                           color: "inherit",
                         }}
                       >
-                        {folder.name.charAt(0).toUpperCase() +
+                        <IconButton onClick={() => handleOpenFolder(folder.id)}>
+                          📁 {folder.name.charAt(0).toUpperCase() +
                           folder.name.slice(1)}
+                        </IconButton>
                       </Typography>
                     </Box>
                     <Box
