@@ -3,8 +3,13 @@ import { Box, Typography, Paper, IconButton, Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
-const FolderTasks = ({ folder, tasks, onRemoveTask, onEditTask }) => {
-
+const FolderTasks = ({
+  folder,
+  tasks,
+  onRemoveTask,
+  onEditTask,
+  onRemoveFromFolder,
+}) => {
   return (
     <Paper
       elevation={3}
@@ -45,8 +50,36 @@ const FolderTasks = ({ folder, tasks, onRemoveTask, onEditTask }) => {
                   justifyContent: "space-between",
                   gap: "0.5rem",
                   textAlign: "center",
+                  position: "relative",
                 }}
               >
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 5,
+                    right: 5,
+                    background: "rgba(255, 0, 0, 0.8)",
+                    borderRadius: "50%",
+                    width: "24px",
+                    height: "24px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    boxShadow: "0px 0px 8px rgba(255, 0, 0, 0.8)",
+                    transition: "transform 0.2s ease-in-out",
+                    "&:hover": {
+                      transform: "scale(1.2)",
+                    },
+                  }}
+                  onClick={() => onRemoveFromFolder(task.id)}
+                >
+                  <Typography
+                    sx={{ color: "#FFF", fontWeight: "bold", fontSize: "14px" }}
+                  >
+                    ✖
+                  </Typography>
+                </Box>
                 <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                   {task.title.charAt(0).toUpperCase() + task.title.slice(1)}
                 </Typography>
@@ -97,6 +130,7 @@ FolderTasks.propTypes = {
   tasks: PropTypes.array.isRequired,
   onRemoveTask: PropTypes.func.isRequired,
   onEditTask: PropTypes.func.isRequired,
+  onRemoveFromFolder: PropTypes.func.isRequired,
 };
 
 export default FolderTasks;

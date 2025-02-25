@@ -71,6 +71,17 @@ const FolderDetails = () => {
     fetchFolderDetails();
   }, [id]);
 
+  const handleRemoveTaskFromFolder = async (taskId) => {
+    if (window.confirm("¿Seguro que deseas quitar esta tarea de la carpeta?")) {
+      try {
+        await api.put(`/tasks/${taskId}/remove-folder`);
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+      } catch (error) {
+        console.error("Error al quitar la tarea de la carpeta:", error);
+      }
+    }
+  };
+
   return (
     <Box sx={{ display: "flex", width: "100vw", height: "100vh" }}>
       <Sidebar />
@@ -120,6 +131,7 @@ const FolderDetails = () => {
                 tasks={tasks}
                 onRemoveTask={handleDeleteTask}
                 onEditTask={handleOpenEditModalTasks}
+                onRemoveFromFolder={handleRemoveTaskFromFolder}
               />
               <Button
                 variant="contained"
