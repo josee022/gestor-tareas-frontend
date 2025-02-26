@@ -1,21 +1,23 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
+import { Routes, Route } from "react-router-dom";
 import Tasks from "./pages/Tasks";
 import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
+import Folders from "./pages/Folders";
+import FolderDetails from "./pages/FolderDetails";
 
 const App = () => {
   return (
-    <Router>
-      <div style={{ textAlign: "center", padding: "20px" }}>
-        <h1>Bienvenido al Gestor de Tareas</h1>
-      </div>
+    <>
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/tasks" element={<Tasks />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/" element={<h1>Bienvenido al Gestor de Tareas</h1>} />
+        <Route path="/tasks" element={<Tasks />} />
+        <Route path="/folders" element={<Folders />} />
+        <Route path="/folders/:id" element={<FolderDetails />} />
       </Routes>
-    </Router>
+    </>
   );
 };
 

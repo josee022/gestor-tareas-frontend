@@ -8,87 +8,79 @@ import {
   IconButton,
   Grid,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import Sidebar from "../components/Sidebar";
-import TaskForm from "../components/TaskForm";
-import TaskEditModal from "../components/TaskEditModal";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import TaskDetailsModal from "../components/TaskDetailsModal";
+import FolderForm from "../components/FolderForm";
+import FolderEditModal from "../components/FolderEditModal";
 
-const Tasks = () => {
-  const [tasks, setTasks] = useState([]);
-  const [editTask, setEditTask] = useState(null);
+const Folder = () => {
+  const [folder, setFolder] = useState([]);
+  const [editFolder, setEditFolder] = useState(null);
   const [openCreate, setOpenCreate] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [showTask, setShowTask] = useState(null);
-  const [openDetails, setOpenDetails] = useState(false);
+  const navigate = useNavigate();
+
+  const handleOpenFolder = (folderId) => {
+    navigate(`/folders/${folderId}`);
+  };
 
   useEffect(() => {
-    fetchTasks();
+    fetchFolder();
   }, []);
 
-  const fetchTasks = async () => {
+  const fetchFolder = async () => {
     try {
-      const response = await api.get("/tasks");
-      setTasks(
+      const response = await api.get("/folders");
+      setFolder(
         response.data.sort(
           (a, b) => new Date(b.created_at) - new Date(a.created_at)
         )
       );
     } catch (error) {
-      console.error("Error al obtener tareas:", error);
+      console.error("Error al obtener carpetas:", error);
     }
   };
 
-  const handleCreateTask = async (newTask) => {
+  const handleCreateFolder = async (newFolder) => {
     try {
-      await api.post("/tasks", newTask);
-      fetchTasks();
+      await api.post("/folders", newFolder);
+      fetchFolder();
       setOpenCreate(false);
     } catch (error) {
-      console.error("Error al crear tarea:", error);
+      console.error("Error al crear carpeta:", error);
     }
   };
 
-  const handleDeleteTask = async (id) => {
+  const handleDeleteFolder = async (id) => {
     try {
-      await api.delete(`/tasks/${id}`);
-      fetchTasks();
+      await api.delete(`/folders/${id}`);
+      fetchFolder();
     } catch (error) {
-      console.error("Error al eliminar tarea:", error);
+      console.error("Error al eliminar carpeta:", error);
     }
   };
 
-  const handleOpenEditModal = (task) => {
-    setEditTask(task);
+  const handleOpenEditModal = (folder) => {
+    setEditFolder(folder);
     setOpenEdit(true);
   };
 
   const handleCloseEditModal = () => {
     setOpenEdit(false);
-    setEditTask(null);
+    setEditFolder(null);
   };
 
-  const handleUpdateTask = async (updatedTask) => {
+  const handleUpdateFolder = async (updatedFolder) => {
     try {
-      await api.put(`/tasks/${updatedTask.id}`, updatedTask);
-      fetchTasks();
+      await api.put(`/folders/${updatedFolder.id}`, updatedFolder);
+      fetchFolder();
       handleCloseEditModal();
     } catch (error) {
-      console.error("Error al actualizar tarea:", error);
+      console.error("Error al actualizar carpeta:", error);
     }
-  };
-
-  const handleOpenDetailsModal = (task) => {
-    setShowTask(task);
-    setOpenDetails(true);
-  };
-
-  const handleCloseDetailsModal = () => {
-    setOpenDetails(false);
-    setShowTask(null);
   };
 
   return (
@@ -112,7 +104,7 @@ const Tasks = () => {
           textAlign: "center",
           overflowX: "hidden",
           overflowY: "auto",
-          backgroundImage: "url('/img/fondotasks.jpg')",
+          backgroundImage: "url('/img/fondo3.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -154,7 +146,7 @@ const Tasks = () => {
                   fontSize: { xs: "1rem", sm: "1.5rem", md: "2rem" },
                 }}
               >
-                Lista de Tareas
+                Lista de Carpetas
               </Typography>
             </Box>
 
@@ -169,11 +161,11 @@ const Tasks = () => {
               }}
               onClick={() => setOpenCreate(true)}
             >
-              Nueva Tarea
+              Nueva Carpeta
             </Button>
           </Box>
           <Grid container spacing={3} justifyContent="flex-start">
-            {tasks.length === 0 ? (
+            {folder.length === 0 ? (
               <Box
                 sx={{
                   display: "flex",
@@ -206,20 +198,19 @@ const Tasks = () => {
                       borderRadius: "20px",
                     }}
                   >
-                    No hay tareas disponibles
+                    No hay carpetas disponibles
                   </Typography>
                 </Box>
               </Box>
             ) : (
-              tasks.map((task) => (
-                <Grid item xs={12} sm={6} md={4} key={task.id}>
+              folder.map((folder) => (
+                <Grid item xs={12} sm={6} md={4} key={folder.id}>
                   <Paper
                     elevation={3}
                     sx={{
                       padding: "1rem",
                       borderRadius: "10px",
-                      background:
-                        task.status === "completada" ? "#E0F7E9" : "#FFF",
+                      background: "#FFF",
                       boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
                       display: "flex",
                       flexDirection: "column",
@@ -227,98 +218,27 @@ const Tasks = () => {
                       gap: "0.5rem",
                       position: "relative",
                       minHeight: "150px",
-                      opacity: task.status === "completada" ? 0.7 : 1,
-                      border:
-                        task.status === "completada"
-                          ? "2px solid #4CAF50"
-                          : "none",
+                      opacity: 1,
+                      border: "none",
                     }}
                   >
-                    {task.status === "completada" && (
-                      <Typography
-                        sx={{
-                          position: "absolute",
-                          top: 8,
-                          right: 8,
-                          fontSize: "16px",
-                          fontWeight: "bold",
-                          color: "#4CAF50",
-                        }}
-                      >
-                        ✅
-                      </Typography>
-                    )}
-
-                    {task.due_date && (
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          position: "absolute",
-                          top: 8,
-                          left: 8,
-                          fontSize: "12px",
-                          fontWeight: "bold",
-                          color: "#555",
-                          background: "#FFD699",
-                          padding: "4px 8px",
-                          borderRadius: "5px",
-                          whiteSpace: "nowrap",
-                          "@media (max-width: 400px)": {
-                            fontSize: "10px",
-                            padding: "3px 6px",
-                          },
-                        }}
-                      >
-                        {new Date(task.due_date).toLocaleDateString("es-ES", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        })}
-                      </Typography>
-                    )}
-
                     <Box sx={{ mt: 3 }}>
                       <Typography
                         variant="h6"
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
-                          marginTop: task.due_date ? "10px" : "0px",
-                          textDecoration:
-                            task.status === "completada"
-                              ? "line-through"
-                              : "none",
-                          color:
-                            task.status === "completada"
-                              ? "#4CAF50"
-                              : "inherit",
+                          marginTop: "0px",
+                          textDecoration: "none",
+                          color: "inherit",
                         }}
                       >
-                        {task.title.charAt(0).toUpperCase() +
-                          task.title.slice(1)}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: "bold",
-                          color: "#8D5B4C",
-                          textAlign: "center",
-                        }}
-                      >
-                        Prioridad: {task.priority}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: "bold",
-                          color: "#C08457",
-                          textAlign: "center",
-                        }}
-                      >
-                        Estado: {task.status}
+                        <IconButton onClick={() => handleOpenFolder(folder.id)}>
+                          📁 {folder.name.charAt(0).toUpperCase() +
+                          folder.name.slice(1)}
+                        </IconButton>
                       </Typography>
                     </Box>
-
                     <Box
                       sx={{
                         display: "flex",
@@ -327,19 +247,13 @@ const Tasks = () => {
                       }}
                     >
                       <IconButton
-                        onClick={() => handleOpenDetailsModal(task)}
-                        sx={{ color: "#4A4A4A" }}
-                      >
-                        <VisibilityIcon />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleOpenEditModal(task)}
+                        onClick={() => handleOpenEditModal(folder)}
                         sx={{ color: "#8D5B4C" }}
                       >
                         <EditIcon />
                       </IconButton>
                       <IconButton
-                        onClick={() => handleDeleteTask(task.id)}
+                        onClick={() => handleDeleteFolder(folder.id)}
                         sx={{ color: "#C08457" }}
                       >
                         <DeleteIcon />
@@ -352,25 +266,20 @@ const Tasks = () => {
           </Grid>
         </Paper>
 
-        <TaskForm
+        <FolderForm
           open={openCreate}
           onClose={() => setOpenCreate(false)}
-          onCreate={handleCreateTask}
+          onCreate={handleCreateFolder}
         />
-        <TaskEditModal
+        <FolderEditModal
           open={openEdit}
           onClose={handleCloseEditModal}
-          task={editTask}
-          onUpdate={handleUpdateTask}
-        />
-        <TaskDetailsModal
-          open={openDetails}
-          onClose={handleCloseDetailsModal}
-          task={showTask}
+          folder={editFolder}
+          onUpdate={handleUpdateFolder}
         />
       </Box>
     </Box>
   );
 };
 
-export default Tasks;
+export default Folder;
