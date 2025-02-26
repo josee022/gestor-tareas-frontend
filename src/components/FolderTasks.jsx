@@ -16,41 +16,59 @@ const FolderTasks = ({
       sx={{
         padding: "1rem",
         borderRadius: "15px",
-        background: "#FFF",
-        boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
+        background: "linear-gradient(to bottom, #C08457, #8D5B4C)",
+        boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
         width: "100%",
-        maxWidth: "800px",
+        maxWidth: "1000px",
         mt: 3,
+        color: "white",
       }}
     >
-      <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
+      <Typography
+        variant="h5"
+        sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}
+      >
         {`Tareas en "${folder.name}"`}
       </Typography>
 
-      <Grid container spacing={2}>
+      <Grid container spacing={2} sx={{ justifyContent: "flex-start" }}>
         {tasks.length === 0 ? (
           <Typography
             variant="body1"
-            sx={{ color: "#666", textAlign: "center", width: "100%" }}
+            sx={{ color: "#DDD", textAlign: "center", width: "100%" }}
           >
             No hay tareas en esta carpeta
           </Typography>
         ) : (
           tasks.map((task) => (
-            <Grid item xs={12} sm={6} md={4} key={task.id}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={4}
+              key={task.id}
+              sx={{ display: "flex" }}
+            >
               <Paper
                 elevation={3}
                 sx={{
                   padding: "1rem",
                   borderRadius: "10px",
-                  background: "#FFF",
+                  background:
+                    task.status === "completada"
+                      ? "#E0F7E9"
+                      : "linear-gradient(to bottom, #FFF, #EEE)",
                   boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
                   gap: "0.5rem",
-                  textAlign: "center",
                   position: "relative",
+                  width: "100%",
+                  minHeight: "150px",
+                  opacity: task.status === "completada" ? 0.7 : 1,
+                  border:
+                    task.status === "completada" ? "2px solid #4CAF50" : "none",
                 }}
               >
                 <Box
@@ -80,18 +98,51 @@ const FolderTasks = ({
                     ✖
                   </Typography>
                 </Box>
-                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                {task.status === "completada" && (
+                  <Typography
+                    sx={{
+                      position: "absolute",
+                      top: 8,
+                      left: 8,
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      color: "#4CAF50",
+                    }}
+                  >
+                    ✅
+                  </Typography>
+                )}
+
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    marginTop: task.due_date ? "10px" : "0px",
+                    textDecoration:
+                      task.status === "completada" ? "line-through" : "none",
+                    color: task.status === "completada" ? "#4CAF50" : "inherit",
+                  }}
+                >
                   {task.title.charAt(0).toUpperCase() + task.title.slice(1)}
                 </Typography>
                 <Typography
                   variant="body2"
-                  sx={{ fontWeight: "bold", color: "#8D5B4C" }}
+                  sx={{
+                    fontWeight: "bold",
+                    color: "#8D5B4C",
+                    textAlign: "center",
+                  }}
                 >
                   Prioridad: {task.priority}
                 </Typography>
                 <Typography
                   variant="body2"
-                  sx={{ fontWeight: "bold", color: "#C08457" }}
+                  sx={{
+                    fontWeight: "bold",
+                    color: "#C08457",
+                    textAlign: "center",
+                  }}
                 >
                   Estado: {task.status}
                 </Typography>

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Typography, Button, Box, Paper } from "@mui/material";
+import { Typography, Button, Box, Paper, IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import FolderIcon from "@mui/icons-material/Folder";
 import Sidebar from "../components/Sidebar";
 import FolderTasks from "../components/FolderTasks";
 import AssignTaskToFolderModal from "../components/AssignTaskToFolderModal";
@@ -92,40 +94,75 @@ const FolderDetails = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          textAlign: "center",
           backgroundImage: "url('/img/fondo3.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           overflowX: "hidden",
           overflowY: "auto",
+          position: "relative",
         }}
       >
-        <Paper
-          elevation={0}
+        <IconButton
+          onClick={() => navigate(-1)}
           sx={{
-            padding: "2rem",
+            position: "absolute",
+            top: 16,
+            right: 16,
+            color: "black",
+            backgroundColor: "white",
+            boxShadow : "4px 4px 10px rgba(0, 0, 0, 0.7)",
+            "&:hover": {
+              backgroundColor: "rgba(255, 255 ,255, 0.8)",
+            }
+          }}
+        >
+          <ArrowBackIcon />
+        </IconButton>
+        <Paper
+          elevation={4}
+          sx={{
+            padding: "1.5rem",
             borderRadius: "15px",
             width: "90%",
             maxWidth: "1200px",
-            background: "transparent",
+            background: "rgba(0, 0, 0, 0.6)",
+            textAlign: "center",
+            color: "white",
           }}
         >
-          <Button
-            onClick={() => navigate(-1)}
-            variant="outlined"
-            sx={{ marginBottom: 2 }}
-          >
-            Volver
-          </Button>
           {folder ? (
             <>
-              <Typography
-                variant="h4"
-                gutterBottom
-                sx={{ fontWeight: "bold", color: "#FFF" }}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
+                }}
               >
-                {folder.name}
-              </Typography>
+                <Typography
+                  variant="h4"
+                  gutterBottom
+                  sx={{
+                    fontWeight: "bold",
+                    textTransform: "capitalize",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <FolderIcon sx={{ mr: 1, fontSize: "2.5rem" }} />{" "}
+                  {folder.name}
+                </Typography>
+                <Button
+                  variant="contained"
+                  sx={{
+                    background: "linear-gradient(to right, #C08457, #8D5B4C)",
+                  }}
+                  onClick={() => setOpenAssignTask(true)}
+                >
+                  + Añadir Tarea
+                </Button>
+              </Box>
               <FolderTasks
                 folder={folder}
                 tasks={tasks}
@@ -133,21 +170,9 @@ const FolderDetails = () => {
                 onEditTask={handleOpenEditModalTasks}
                 onRemoveFromFolder={handleRemoveTaskFromFolder}
               />
-              <Button
-                variant="contained"
-                sx={{
-                  mt: 2,
-                  background: "linear-gradient(to right, #C08457, #8D5B4C)",
-                }}
-                onClick={() => setOpenAssignTask(true)}
-              >
-                Añadir Tarea a {folder.name}
-              </Button>
             </>
           ) : (
-            <Typography variant="body1" sx={{ color: "#FFF" }}>
-              Cargando...
-            </Typography>
+            <Typography variant="body1">Cargando...</Typography>
           )}
         </Paper>
       </Box>
