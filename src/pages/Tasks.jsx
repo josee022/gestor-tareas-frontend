@@ -8,6 +8,7 @@ import {
   IconButton,
   Grid,
 } from "@mui/material";
+import PushPinIcon from "@mui/icons-material/PushPin";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
@@ -32,10 +33,24 @@ const Tasks = () => {
   const fetchTasks = async () => {
     try {
       const response = await api.get("/tasks");
+
       setTasks(
-        response.data.sort(
-          (a, b) => new Date(b.created_at) - new Date(a.created_at)
-        )
+        response.data
+          .map((task) => ({
+            ...task,
+            pinned_at: task.is_pinned
+              ? task.pinned_at || new Date().toISOString()
+              : null,
+          }))
+          .sort((a, b) => {
+            if (a.is_pinned === b.is_pinned) {
+              if (a.is_pinned) {
+                return new Date(b.pinned_at) - new Date(a.pinned_at);
+              }
+              return new Date(b.created_at) - new Date(a.created_at);
+            }
+            return b.is_pinned - a.is_pinned;
+          })
       );
     } catch (error) {
       console.error("Error al obtener tareas:", error);
@@ -89,6 +104,35 @@ const Tasks = () => {
   const handleCloseDetailsModal = () => {
     setOpenDetails(false);
     setShowTask(null);
+  };
+
+  const handleTogglePin = async (taskId, isPinned) => {
+    try {
+      await api.put(`/tasks/${taskId}/pin`);
+
+      setTasks((prevTasks) => {
+        const updatedTasks = prevTasks.map((task) =>
+          task.id === taskId
+            ? {
+                ...task,
+                is_pinned: !isPinned,
+                pinned_at: !isPinned ? new Date().toISOString() : null,
+              }
+            : task
+        );
+        return updatedTasks.sort((a, b) => {
+          if (a.is_pinned === b.is_pinned) {
+            if (a.is_pinned) {
+              return new Date(b.pinned_at) - new Date(a.pinned_at);
+            }
+            return new Date(b.created_at) - new Date(a.created_at);
+          }
+          return b.is_pinned - a.is_pinned;
+        });
+      });
+    } catch (error) {
+      console.error("Error al fijar/desfijar la tarea:", error);
+    }
   };
 
   return (
@@ -234,12 +278,45 @@ const Tasks = () => {
                           : "none",
                     }}
                   >
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 8,
+                        right: 8,
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      <IconButton
+                        onClick={() => handleTogglePin(task.id, task.is_pinned)}
+                        sx={{
+                          color: task.is_pinned
+                            ? "#8D5B4C"
+                            : "rgba(0, 0, 0, 0.5)",
+                          transition: "transform 0.2s ease-in-out",
+                          "&:hover": {
+                            transform: "scale(1.2)",
+                          },
+                        }}
+                      >
+                        <PushPinIcon
+                          sx={{
+                            fontSize: "20px",
+                            opacity: task.is_pinned ? 1 : 0.5,
+                            transform: task.is_pinned
+                              ? "rotate(0deg)"
+                              : "rotate(45deg)",
+                          }}
+                        />
+                      </IconButton>
+                    </Box>
+
                     {task.status === "completada" && (
                       <Typography
                         sx={{
                           position: "absolute",
-                          top: 8,
-                          right: 8,
+                          bottom: 8,
+                          left: 8,
                           fontSize: "16px",
                           fontWeight: "bold",
                           color: "#4CAF50",
@@ -351,7 +428,6 @@ const Tasks = () => {
             )}
           </Grid>
         </Paper>
-
         <TaskForm
           open={openCreate}
           onClose={() => setOpenCreate(false)}
