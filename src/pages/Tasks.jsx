@@ -17,6 +17,9 @@ import TaskForm from "../components/TaskForm";
 import TaskEditModal from "../components/TaskEditModal";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import TaskDetailsModal from "../components/TaskDetailsModal";
+import { Chip } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import TaskTagModal from "../components/TaskTagModal";
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
@@ -25,6 +28,8 @@ const Tasks = () => {
   const [openEdit, setOpenEdit] = useState(false);
   const [showTask, setShowTask] = useState(null);
   const [openDetails, setOpenDetails] = useState(false);
+  const [openTagModal, setOpenTagModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   useEffect(() => {
     fetchTasks();
@@ -33,6 +38,7 @@ const Tasks = () => {
   const fetchTasks = async () => {
     try {
       const response = await api.get("/tasks");
+      console.log("Tareas obtenidas:", response.data);
 
       setTasks(
         response.data
@@ -135,6 +141,41 @@ const Tasks = () => {
     }
   };
 
+  const tagColors = ["#E57373", "#81C784", "#64B5F6", "#FFD54F", "#BA68C8"];
+
+  const getTagColor = (tagName) => {
+    let hash = 0;
+    for (let i = 0; i < tagName.length; i++) {
+      hash = (hash * 31 + tagName.charCodeAt(i)) % 1000;
+    }
+    return tagColors[hash % tagColors.length];
+  };
+
+  const handleRemoveTag = async (taskId, tagId) => {
+    try {
+      await api.delete(`/tasks/${taskId}/tags/${tagId}`);
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === taskId
+            ? { ...task, tags: task.tags.filter((tag) => tag.id !== tagId) }
+            : task
+        )
+      );
+    } catch (error) {
+      console.error("Error al eliminar etiqueta:", error);
+    }
+  };
+
+  const handleOpenTagModal = (task) => {
+    setSelectedTask(task);
+    setOpenTagModal(true);
+  };
+
+  const handleCloseTagModal = () => {
+    setOpenTagModal(false);
+    setSelectedTask(null);
+  };
+
   return (
     <Box
       sx={{
@@ -216,7 +257,7 @@ const Tasks = () => {
               Nueva Tarea
             </Button>
           </Box>
-          <Grid container spacing={3} justifyContent="flex-start">
+          <Grid container spacing={2} justifyContent="flex-start">
             {tasks.length === 0 ? (
               <Box
                 sx={{
@@ -224,53 +265,41 @@ const Tasks = () => {
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  height: "20vh",
+                  height: "15vh",
                   textAlign: "center",
-                  marginLeft: "24vw",
+                  marginLeft: "20vw",
                 }}
               >
-                <Box
+                <Typography
+                  variant="h6"
                   sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "2rem",
+                    fontWeight: "bold",
+                    color: "#FFF",
+                    fontSize: "1rem",
+                    background: "linear-gradient(to right, #C08457, #FFD699)",
+                    padding: "6px 12px",
                     borderRadius: "15px",
                   }}
                 >
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: "bold",
-                      color: "#FFF",
-                      fontSize: { xs: "1rem", sm: "1.2rem", md: "1.7rem" },
-                      background: "linear-gradient(to right, #C08457, #FFD699)",
-                      padding: "8px 16px",
-                      borderRadius: "20px",
-                    }}
-                  >
-                    No hay tareas disponibles
-                  </Typography>
-                </Box>
+                  No hay tareas disponibles
+                </Typography>
               </Box>
             ) : (
               tasks.map((task) => (
-                <Grid item xs={12} sm={6} md={4} key={task.id}>
+                <Grid item xs={12} sm={6} md={3} key={task.id}>
                   <Paper
-                    elevation={3}
+                    elevation={2}
                     sx={{
-                      padding: "1rem",
-                      borderRadius: "10px",
+                      padding: "0.8rem",
+                      borderRadius: "8px",
                       background:
                         task.status === "completada" ? "#E0F7E9" : "#FFF",
-                      boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
+                      boxShadow: "0px 3px 6px rgba(0,0,0,0.1)",
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "space-between",
-                      gap: "0.5rem",
                       position: "relative",
-                      minHeight: "150px",
+                      minHeight: "120px",
                       opacity: task.status === "completada" ? 0.7 : 1,
                       border:
                         task.status === "completada"
@@ -281,8 +310,8 @@ const Tasks = () => {
                     <Box
                       sx={{
                         position: "absolute",
-                        top: 8,
-                        right: 8,
+                        top: 6,
+                        right: 6,
                         display: "flex",
                         alignItems: "center",
                       }}
@@ -301,7 +330,7 @@ const Tasks = () => {
                       >
                         <PushPinIcon
                           sx={{
-                            fontSize: "20px",
+                            fontSize: "18px",
                             opacity: task.is_pinned ? 1 : 0.5,
                             transform: task.is_pinned
                               ? "rotate(0deg)"
@@ -310,14 +339,13 @@ const Tasks = () => {
                         />
                       </IconButton>
                     </Box>
-
                     {task.status === "completada" && (
                       <Typography
                         sx={{
                           position: "absolute",
-                          bottom: 8,
-                          left: 8,
-                          fontSize: "16px",
+                          bottom: 6,
+                          left: 6,
+                          fontSize: "14px",
                           fontWeight: "bold",
                           color: "#4CAF50",
                         }}
@@ -325,25 +353,19 @@ const Tasks = () => {
                         ✅
                       </Typography>
                     )}
-
                     {task.due_date && (
                       <Typography
                         variant="caption"
                         sx={{
                           position: "absolute",
-                          top: 8,
-                          left: 8,
-                          fontSize: "12px",
+                          top: 6,
+                          left: 6,
+                          fontSize: "11px",
                           fontWeight: "bold",
                           color: "#555",
                           background: "#FFD699",
-                          padding: "4px 8px",
-                          borderRadius: "5px",
-                          whiteSpace: "nowrap",
-                          "@media (max-width: 400px)": {
-                            fontSize: "10px",
-                            padding: "3px 6px",
-                          },
+                          padding: "3px 6px",
+                          borderRadius: "4px",
                         }}
                       >
                         {new Date(task.due_date).toLocaleDateString("es-ES", {
@@ -353,47 +375,101 @@ const Tasks = () => {
                         })}
                       </Typography>
                     )}
-
-                    <Box sx={{ mt: 3 }}>
-                      <Typography
-                        variant="h6"
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: "0.95rem",
+                        textAlign: "center",
+                        textDecoration:
+                          task.status === "completada"
+                            ? "line-through"
+                            : "none",
+                        color:
+                          task.status === "completada" ? "#4CAF50" : "inherit",
+                      }}
+                    >
+                      {task.title}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: "bold",
+                        color: "#8D5B4C",
+                        textAlign: "center",
+                        fontSize: "0.8rem",
+                      }}
+                    >
+                      Prioridad: {task.priority}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: "bold",
+                        color: "#C08457",
+                        textAlign: "center",
+                        fontSize: "0.8rem",
+                      }}
+                    >
+                      Estado: {task.status}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 0.3,
+                        mt: 1,
+                        justifyContent: "center",
+                      }}
+                    >
+                      {Array.isArray(task.tags) && task.tags.length > 0 ? (
+                        task.tags.map((tag) => (
+                          <Chip
+                            key={tag.id}
+                            label={tag.name}
+                            sx={{
+                              backgroundColor: getTagColor(tag.name),
+                              color: "#FFF",
+                              fontSize: "0.7rem",
+                              height: "18px",
+                              borderRadius: "10px",
+                            }}
+                            onDelete={() => handleRemoveTag(task.id, tag.id)}
+                            deleteIcon={
+                              <CloseIcon
+                                sx={{ color: "white", fontSize: "12px" }}
+                              />
+                            }
+                          />
+                        ))
+                      ) : (
+                        <Typography
+                          variant="caption"
+                          sx={{ color: "#999", fontSize: "10px" }}
+                        >
+                          Sin etiquetas
+                        </Typography>
+                      )}
+                    </Box>
+                    <Box
+                      sx={{ display: "flex", justifyContent: "center", mt: 1 }}
+                    >
+                      <Button
+                        onClick={() => handleOpenTagModal(task)}
+                        variant="contained"
+                        size="small"
                         sx={{
-                          fontWeight: "bold",
-                          textAlign: "center",
-                          marginTop: task.due_date ? "10px" : "0px",
-                          textDecoration:
-                            task.status === "completada"
-                              ? "line-through"
-                              : "none",
-                          color:
-                            task.status === "completada"
-                              ? "#4CAF50"
-                              : "inherit",
+                          fontSize: "0.7rem",
+                          padding: "2px 6px",
+                          borderRadius: "10px",
+                          backgroundColor: "#C08457",
+                          "&:hover": {
+                            backgroundColor: "#A06A3E", 
+                          },
                         }}
                       >
-                        {task.title.charAt(0).toUpperCase() +
-                          task.title.slice(1)}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: "bold",
-                          color: "#8D5B4C",
-                          textAlign: "center",
-                        }}
-                      >
-                        Prioridad: {task.priority}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: "bold",
-                          color: "#C08457",
-                          textAlign: "center",
-                        }}
-                      >
-                        Estado: {task.status}
-                      </Typography>
+                        + Etiqueta
+                      </Button>
                     </Box>
 
                     <Box
@@ -443,6 +519,12 @@ const Tasks = () => {
           open={openDetails}
           onClose={handleCloseDetailsModal}
           task={showTask}
+        />
+        <TaskTagModal
+          open={openTagModal}
+          onClose={handleCloseTagModal}
+          task={selectedTask}
+          onTagAssigned={fetchTasks}
         />
       </Box>
     </Box>
