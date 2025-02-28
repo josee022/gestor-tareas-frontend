@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Folders from "./pages/Folders";
 import FolderDetails from "./pages/FolderDetails";
+import Tags from "./pages/Tags";
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/tasks" element={<Tasks />} />
         <Route path="/folders" element={<Folders />} />
         <Route path="/folders/:id" element={<FolderDetails />} />
+        <Route path="/tags" element={<Tags />} />
       </Routes>
     </>
   );
