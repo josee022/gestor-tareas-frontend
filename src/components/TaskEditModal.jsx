@@ -98,7 +98,6 @@ const TaskEditModal = ({ open, onClose, task, onUpdate }) => {
   );
 };
 
-// Validación de `props`
 TaskEditModal.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
