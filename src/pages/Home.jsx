@@ -9,6 +9,8 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
+console.log("Backend URL desde Vite:", import.meta.env.VITE_API_URL);
+
 const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
@@ -159,7 +161,7 @@ const App = () => {
                   color: "white",
                   "&:hover": {
                     background: "linear-gradient(to right, #B76E50, #7A3E32)",
-                    color: "white", 
+                    color: "white",
                   },
                 }}
               >
