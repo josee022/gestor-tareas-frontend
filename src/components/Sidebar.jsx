@@ -13,24 +13,14 @@ import {
   ListAlt,
   Folder,
   Label,
-  PushPin,
   CalendarMonth,
-  BarChart,
-  Palette,
-  Lock,
-  Settings,
 } from "@mui/icons-material";
 
 const menuItems = [
   { text: "Tareas", icon: <ListAlt />, path: "/tasks" },
   { text: "Carpetas", icon: <Folder />, path: "/folders" },
   { text: "Etiquetas", icon: <Label />, path: "/tags" },
-  { text: "Notas Fijadas", icon: <PushPin />, path: "/pinned" },
   { text: "Calendario", icon: <CalendarMonth />, path: "/calendar" },
-  { text: "Estadísticas", icon: <BarChart />, path: "/stats" },
-  { text: "Personalización", icon: <Palette />, path: "/theme" },
-  { text: "Notas Privadas", icon: <Lock />, path: "/private" },
-  { text: "Ajustes", icon: <Settings />, path: "/settings" },
 ];
 
 const Sidebar = () => {

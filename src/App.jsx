@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Folders from "./pages/Folders";
 import FolderDetails from "./pages/FolderDetails";
 import Tags from "./pages/Tags";
+import CalendarPage from "./pages/Calendar";
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
         <Route path="/folders" element={<Folders />} />
         <Route path="/folders/:id" element={<FolderDetails />} />
         <Route path="/tags" element={<Tags />} />
+        <Route path="/calendar" element={<CalendarPage />} />
       </Routes>
     </>
   );
