@@ -12,7 +12,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await api.post("/api/login", { email, password });
-      navigate("/api/tasks");
+      navigate("/tasks");
     } catch (error) {
       alert("Error en login: " + (error.response?.data?.message || "Error desconocido"));
     }
