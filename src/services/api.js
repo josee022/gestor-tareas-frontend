@@ -23,4 +23,13 @@ if (token) {
   setAuthToken(token);
 }
 
+export const getCsrfToken = async () => {
+  try {
+    await api.get("/sanctum/csrf-cookie"); 
+  } catch (error) {
+    console.error("Error obteniendo CSRF token:", error);
+  }
+};
+
+
 export default api;

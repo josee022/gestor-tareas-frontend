@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api, { setAuthToken } from "../services/api";
+import api, { setAuthToken , getCsrfToken } from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 
@@ -11,14 +11,6 @@ const Register = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const getCsrfToken = async () => {
-    try {
-      await api.get("/sanctum/csrf-cookie");
-    } catch (error) {
-      console.error("Error obteniendo CSRF token:", error);
-    }
-  };
-
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -26,7 +18,6 @@ const Register = () => {
       setError("Las contraseñas no coinciden");
       return;
     }
-
     try {
       await getCsrfToken();
       const response = await api.post("/register", { name, email, password }, {withCredentials: false});
