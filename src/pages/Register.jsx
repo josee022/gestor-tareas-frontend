@@ -19,7 +19,7 @@ const Register = () => {
       return;
     }
     try {
-      await api.post("/register", { name, email, password }); 
+      await api.post("/api/register", { name, email, password });
       alert("Registro exitoso. Ahora puedes iniciar sesión.");
       navigate("/login");
     } catch (error) {
