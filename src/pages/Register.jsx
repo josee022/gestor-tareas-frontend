@@ -11,6 +11,14 @@ const Register = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const getCsrfToken = async () => {
+    try {
+      await api.get("/sanctum/csrf-cookie");
+    } catch (error) {
+      console.error("Error obteniendo CSRF token:", error);
+    }
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -20,6 +28,7 @@ const Register = () => {
     }
 
     try {
+      await getCsrfToken();
       const response = await api.post("/register", { name, email, password }, {withCredentials: false});
       setAuthToken(response.data.access_token);
       navigate("/tasks");
