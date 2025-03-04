@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api, { setAuthToken , getCsrfToken } from "../services/api";
+import api from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 
@@ -19,14 +19,14 @@ const Register = () => {
       return;
     }
     try {
-      await getCsrfToken();
-      const response = await api.post("/register", { name, email, password }, {withCredentials: false});
-      setAuthToken(response.data.access_token);
-      navigate("/tasks");
+      await api.post("/register", { name, email, password }); 
+      alert("Registro exitoso. Ahora puedes iniciar sesión.");
+      navigate("/login");
     } catch (error) {
       setError(error.response?.data?.message || "Error en el registro");
     }
   };
+
 
   return (
     <Box

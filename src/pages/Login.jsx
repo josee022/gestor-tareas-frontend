@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api, { setAuthToken } from "../services/api";
+import api from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 
@@ -11,13 +11,13 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post("/login", { email, password });
-      setAuthToken(response.data.access_token);
+      await api.post("/login", { email, password });
       navigate("/tasks");
     } catch (error) {
-      alert("Error en login: " + error.response.data.message);
+      alert("Error en login: " + (error.response?.data?.message || "Error desconocido"));
     }
   };
+
 
   return (
     <Box
@@ -43,7 +43,7 @@ const Login = () => {
           position: "absolute",
           top: "20px",
           left: "20px",
-          width: "180px", 
+          width: "180px",
           height: "auto",
         }}
       />

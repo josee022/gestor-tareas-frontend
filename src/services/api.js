@@ -5,31 +5,6 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
 });
-
-export const setAuthToken = (token) => {
-  if (token) {
-    api.defaults.headers["Authorization"] = `Bearer ${token}`;
-    localStorage.setItem("token", token);
-  } else {
-    delete api.defaults.headers["Authorization"];
-    localStorage.removeItem("token");
-  }
-};
-
-const token = localStorage.getItem("token");
-if (token) {
-  setAuthToken(token);
-}
-
-export const getCsrfToken = async () => {
-  try {
-    await api.get("/sanctum/csrf-cookie"); 
-  } catch (error) {
-    console.error("Error obteniendo CSRF token:", error);
-  }
-};
-
 
 export default api;
