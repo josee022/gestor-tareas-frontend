@@ -11,7 +11,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/api/login", { email, password });
+      await api.post("/login", { email, password });
       navigate("/tasks");
     } catch (error) {
       alert("Error en login: " + (error.response?.data?.message || "Error desconocido"));
