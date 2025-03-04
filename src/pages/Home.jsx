@@ -9,8 +9,6 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-console.log("Backend URL desde Vite:", import.meta.env.VITE_API_URL);
-
 const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",

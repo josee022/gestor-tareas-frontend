@@ -20,7 +20,7 @@ const Register = () => {
     }
 
     try {
-      const response = await api.post("/register", { name, email, password });
+      const response = await api.post("/register", { name, email, password }, {withCredentials: false});
       setAuthToken(response.data.access_token);
       navigate("/tasks");
     } catch (error) {
@@ -52,7 +52,7 @@ const Register = () => {
           position: "absolute",
           top: "20px",
           left: "20px",
-          width: "180px", 
+          width: "180px",
           height: "auto",
         }}
       />
