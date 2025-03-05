@@ -50,7 +50,7 @@ const AssignTaskToFolderModal = ({ open, onClose, folder, onTaskAssigned }) => {
 
       onTaskAssigned({
         ...selectedTask,
-        folder_id: folder.id, 
+        folder_id: folder.id,
       });
 
       onClose();
