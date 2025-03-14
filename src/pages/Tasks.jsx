@@ -299,7 +299,8 @@ const Tasks = () => {
                       flexDirection: "column",
                       justifyContent: "space-between",
                       position: "relative",
-                      minHeight: "120px",
+                      minHeight: "180px",
+                      height: "100%",
                       opacity: task.status === "completada" ? 0.7 : 1,
                       border:
                         task.status === "completada"
@@ -387,6 +388,7 @@ const Tasks = () => {
                             : "none",
                         color:
                           task.status === "completada" ? "#4CAF50" : "inherit",
+                        marginTop: "18px",
                       }}
                     >
                       {task.title}
@@ -464,7 +466,7 @@ const Tasks = () => {
                           borderRadius: "10px",
                           backgroundColor: "#C08457",
                           "&:hover": {
-                            backgroundColor: "#A06A3E", 
+                            backgroundColor: "#A06A3E",
                           },
                         }}
                       >
