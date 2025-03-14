@@ -75,7 +75,7 @@ const Tags = () => {
           textAlign: "center",
           overflowX: "hidden",
           overflowY: "auto",
-          backgroundImage: "url('/img/fondo6.jpg')",
+          backgroundImage: "url('/img/fondo7.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

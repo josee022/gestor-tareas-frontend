@@ -94,7 +94,7 @@ const FolderDetails = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          backgroundImage: "url('/img/fondo3.jpg')",
+          backgroundImage: "url('/img/fondo2.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           overflowX: "hidden",

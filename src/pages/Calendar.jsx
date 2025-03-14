@@ -19,7 +19,7 @@ const CalendarPage = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          backgroundImage: "url('/img/fondo6.jpg')",
+          backgroundImage: "url('/img/fondo1.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
