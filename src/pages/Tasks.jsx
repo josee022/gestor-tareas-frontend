@@ -286,7 +286,7 @@ const Tasks = () => {
               </Box>
             ) : (
               tasks.map((task) => (
-                <Grid item xs={12} sm={6} md={3} key={task.id}>
+                <Grid item xs={12} sm={6} md={3} key={task.id} sx={{ paddingBottom: "40px" }}>
                   <Paper
                     elevation={2}
                     sx={{
